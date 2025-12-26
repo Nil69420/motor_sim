@@ -24,5 +24,4 @@ unit_tests
 *.code-workspace
 
 # Test artifacts
-test_*
 *.log
