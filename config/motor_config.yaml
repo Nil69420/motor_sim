@@ -1,0 +1,61 @@
+# Motor Driver Simulation - Configuration File
+#
+# This file contains configuration parameters for motor simulation.
+# Copy this file and modify values as needed for your application.
+
+motor:
+  # Motor identification
+  id: 1
+  model_number: 0x000F  # STS3032
+  firmware_version: 0x24
+
+  # Position limits (0-4095)
+  # Set both to 0 for wheel mode (continuous rotation)
+  cw_angle_limit: 0
+  ccw_angle_limit: 4095
+
+  # Safety limits
+  temperature_limit: 70  # Celsius
+  min_voltage: 60        # Volts * 10 (6.0V)
+  max_voltage: 90        # Volts * 10 (9.0V)
+  max_torque: 1023       # Max value
+
+  # Communication
+  baud_rate: 115200
+  return_delay_time: 250  # Microseconds / 2
+
+physics:
+  # Motion limits
+  max_acceleration: 2000.0  # Positions/s^2
+  max_velocity: 1000.0      # Positions/s
+
+  # Noise and realism
+  position_noise: 0.5       # Standard deviation in positions
+  voltage_noise: 0.5        # Voltage fluctuation
+
+  # Thermal model
+  thermal_coefficient: 0.01  # Temperature rise per load
+  thermal_dissipation: 0.1   # Cooling rate
+
+  # Mechanical properties
+  friction_coefficient: 0.05
+  inertia: 0.01
+
+transport:
+  # Buffer sizes
+  tx_buffer_size: 1024
+  rx_buffer_size: 1024
+
+  # Simulation settings
+  simulate_timing: true
+  error_rate: 0.0  # Probability of byte corruption (0.0 - 1.0)
+
+protocol:
+  # Timeouts
+  timeout_ms: 100
+  max_retries: 3
+  response_delay_us: 0  # Simulated device response delay
+
+logging:
+  # Log levels: TRACE, DEBUG, INFO, WARN, ERROR, FATAL
+  level: INFO

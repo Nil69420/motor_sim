@@ -1,0 +1,28 @@
+# Build artifacts
+build/
+*.o
+*.a
+*.so
+*.dylib
+
+# Executables
+basic_control
+position_tracking
+multi_motor
+simple_demo
+unit_tests
+
+# Temporary files
+*.swp
+*.swo
+*~
+.DS_Store
+
+# IDE files
+.vscode/
+.idea/
+*.code-workspace
+
+# Test artifacts
+test_*
+*.log
