@@ -1,6 +1,14 @@
 #!/bin/bash
 
-set -e  
+set -e
+
+if [ "$1" == "--ros" ]; then
+    echo "Building with ROS2..."
+    cd ../..
+    colcon build --packages-select mock_interface
+    echo "Done! Source: source install/setup.bash"
+    exit 0
+fi
 
 echo "================================"
 echo "Motor Driver Sim - Build Script"
@@ -38,7 +46,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         *)
             echo "Unknown option: $1"
-            echo "Usage: $0 [--debug] [--no-tests] [--no-examples] [--clean]"
+            echo "Usage: $0 [--ros] [--debug] [--no-tests] [--no-examples] [--clean]"
             exit 1
             ;;
     esac
@@ -68,6 +76,7 @@ cmake .. \
     -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
     -DBUILD_TESTS=$BUILD_TESTS \
     -DBUILD_EXAMPLES=$BUILD_EXAMPLES \
+    -DBUILD_ROS2=OFF \
     -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 
 if [ $? -eq 0 ]; then

@@ -37,6 +37,85 @@ A C++ library for simulating Feetech servo motor actuators **without real hardwa
 └─────────────────────────────────────────┘
 ```
 
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    ROS2 Control Framework                        │
+│  ┌────────────────────────────────────────────────────────────┐ │
+│  │          Controller Manager (Lifecycle Node)               │ │
+│  │  ┌──────────────────┐  ┌──────────────────┐               │ │
+│  │  │ Trajectory       │  │ Position         │               │ │
+│  │  │ Controller       │  │ Controller       │               │ │
+│  │  └────────┬─────────┘  └────────┬─────────┘               │ │
+│  │           │ command              │ command                 │ │
+│  │           │ (position)           │ (position)              │ │
+│  └───────────┼──────────────────────┼─────────────────────────┘ │
+│              │                      │                           │
+│              ▼                      ▼                           │
+│  ┌────────────────────────────────────────────────────────────┐ │
+│  │        Hardware Interface (Command/State Layer)            │ │
+│  │  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐         │ │
+│  │  │ Joint1      │ │ Joint2      │ │ Joint3      │         │ │
+│  │  │ - pos_cmd   │ │ - pos_cmd   │ │ - pos_cmd   │         │ │
+│  │  │ - vel_cmd   │ │ - vel_cmd   │ │ - vel_cmd   │         │ │
+│  │  │ - pos_state │ │ - pos_state │ │ - pos_state │         │ │
+│  │  │ - vel_state │ │ - vel_state │ │ - vel_state │         │ │
+│  │  │ - eff_state │ │ - eff_state │ │ - eff_state │         │ │
+│  │  │ - temp      │ │ - temp      │ │ - temp      │         │ │
+│  │  └─────────────┘ └─────────────┘ └─────────────┘         │ │
+│  └────────────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────────┘
+                            ▲ read()    │ write()
+                            │           ▼
+┌─────────────────────────────────────────────────────────────────┐
+│        FeetechHardwareInterface (Our Plugin)                     │
+│  ┌────────────────────────────────────────────────────────────┐ │
+│  │                   Lifecycle Management                      │ │
+│  │  on_init() → on_configure() → on_activate()                │ │
+│  │  on_deactivate() → on_cleanup()                            │ │
+│  └────────────────────────────────────────────────────────────┘ │
+│                                                                  │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐              │
+│  │ Actuator 1  │ │ Actuator 2  │ │ Actuator 3  │              │
+│  │ (Motor API) │ │ (Motor API) │ │ (Motor API) │              │
+│  └──────┬──────┘ └──────┬──────┘ └──────┬──────┘              │
+│         │               │               │                       │
+│         ▼               ▼               ▼                       │
+│  ┌──────────────────────────────────────────────┐              │
+│  │         MockSerialBuffer (Transport)         │              │
+│  └──────────────────────────────────────────────┘              │
+│         │               │               │                       │
+│         ▼               ▼               ▼                       │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐              │
+│  │ Simulator 1 │ │ Simulator 2 │ │ Simulator 3 │              │
+│  │ (Physics)   │ │ (Physics)   │ │ (Physics)   │              │
+│  └─────────────┘ └─────────────┘ └─────────────┘              │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+## Lifecycle Management
+
+### State Machine
+
+The hardware interface follows the ros2_control lifecycle state machine:
+
+```
+                    on_init()
+   [UNCONFIGURED] ───────────► [UNCONFIGURED]
+         │                           │
+         │ on_configure()            │
+         ▼                           │
+    [INACTIVE] ◄────────────────────┘
+         │              ▲
+         │              │
+         │ on_activate()│ on_deactivate()
+         ▼              │
+     [ACTIVE] ──────────┘
+         │
+         │ on_cleanup()
+         ▼
+   [UNCONFIGURED]
+```
+
 **How it Works:**
 - `MotorSimulator` provides realistic physics (acceleration, load, temperature)
 - `MockSerialBuffer` simulates bidirectional serial communication
@@ -59,6 +138,24 @@ mkdir build && cd build
 cmake ..
 make -j$(nproc)
 ```
+
+### Build with colcon
+
+```bash
+# Build the package
+colcon build --packages-select mock_interface
+
+# Source the workspace
+source install/setup.bash
+```
+
+This builds:
+- `libmotor_driver_sim.a` - Static library (core simulation)
+- `libmock_interface_ros2.so` - ROS2 hardware interface plugin
+- All configuration files installed to `share/mock_interface/`
+
+---
+
 
 ### Run Examples
 
@@ -332,7 +429,6 @@ buffer->injectError();  // Test error handling
 
 ## Roadmap
 
-- [ ] ROS 2 integration
 - [ ] Real-time plotting tools
 - [ ] Trajectory planning utilities
 - [ ] Multi-protocol support (Dynamixel, etc.)

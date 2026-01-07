@@ -1,0 +1,11 @@
+<library path="mock_interface_ros2">
+  <class 
+    name="mock_interface/MockMotorHardwareInterface" 
+    type="motor_sim::ros2::MockMotorHardwareInterface" 
+    base_class_type="hardware_interface::SystemInterface">
+    <description>
+      Mock motor simulation hardware interface for ros2_control.
+      Supports position, velocity, and effort control with realistic physics simulation.
+    </description>
+  </class>
+</library>

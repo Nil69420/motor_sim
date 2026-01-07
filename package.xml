@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>mock_interface</name>
+  <version>1.0.0</version>
+  <description>Feetech motor simulation library with ROS2 hardware interface</description>
+  
+  <maintainer email="your_email@example.com">Your Name</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>cmake</buildtool_depend>
+
+  <!-- ROS2 Core Dependencies -->
+  <depend>rclcpp</depend>
+  <depend>rclcpp_lifecycle</depend>
+  
+  <!-- ROS2 Control Dependencies -->
+  <depend>hardware_interface</depend>
+  <depend>pluginlib</depend>
+  <depend>controller_interface</depend>
+  <depend>controller_manager</depend>
+  
+  <!-- Standard ROS2 Controllers -->
+  <depend>joint_state_broadcaster</depend>
+  <depend>joint_trajectory_controller</depend>
+  <depend>position_controllers</depend>
+  <depend>velocity_controllers</depend>
+  
+  <!-- Robot Description -->
+  <depend>robot_state_publisher</depend>
+  <depend>xacro</depend>
+  
+  <!-- Testing -->
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+  <test_depend>ament_cmake_gtest</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+    
+    <!-- Declare this package exports a hardware interface plugin -->
+    <hardware_interface plugin="${prefix}/feetech_hardware_interface_plugin.xml"/>
+  </export>
+</package>
